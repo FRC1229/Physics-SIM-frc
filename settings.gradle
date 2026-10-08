@@ -1,0 +1,97 @@
+import org.gradle.internal.os.OperatingSystem
+
+pluginManagement {
+    repositories {
+        mavenLocal()
+        gradlePluginPortal()
+        String frcYear = '2026'
+        File frcHome
+        if (OperatingSystem.current().isWindows()) {
+            String publicFolder = System.getenv('PUBLIC')
+            if (publicFolder == null) {
+                publicFolder = "C:\\Users\\Public"
+            }
+            def homeRoot = new File(publicFolder, "wpilib")
+            frcHome = new File(homeRoot, frcYear)
+        } else {
+            def userFolder = System.getProperty("user.home")
+            def homeRoot = new File(userFolder, "wpilib")
+            frcHome = new File(homeRoot, frcYear)
+        }
+        def frcHomeMaven = new File(frcHome, 'maven')
+        maven {
+            name = 'frcHome'
+            url = frcHomeMaven
+        }
+    }
+}
+
+Properties props = System.getProperties();
+props.setProperty("org.gradle.internal.native.headers.unresolved.dependencies.ignore", "true");
+
+// ------------------------------------------------------------------
+// Mirror the robot project's vendordeps and deploy folder into this one,
+// every time Gradle runs, so the simulator always matches the robot code:
+//   vendordeps/        - same library versions (REVLib, Phoenix 6, ...)
+//   src/main/deploy/   - PathPlanner paths/settings the robot code loads
+// ------------------------------------------------------------------
+// GradleRIO needs Java 17+. The WPILib installer ships one; plain `gradlew`
+// from a terminal may pick up an older system Java instead.
+if (!JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_17)) {
+    throw new GradleException("This build needs Java 17 or newer, but Gradle is running on Java " +
+                              "${JavaVersion.current()}. Use the WPILib JDK, e.g. set JAVA_HOME to " +
+                              "C:/Users/Public/wpilib/<year>/jdk (Windows) or ~/wpilib/<year>/jdk (macOS/Linux).")
+}
+
+// Where the robot code lives. Checked in this order:
+//   1. environment variable ROBOT_PROJECT_DIR   (handy per computer, no file edits)
+//   2. robotProjectDir in gradle.properties    (relative paths are from this folder)
+def robotDirSetting = System.getenv('ROBOT_PROJECT_DIR') ?:
+        (settings.hasProperty('robotProjectDir') ? settings.robotProjectDir : '../Rebuilt')
+def robotDir = new File(robotDirSetting)
+if (!robotDir.isAbsolute()) {
+    robotDir = new File(settingsDir, robotDirSetting)
+}
+robotDir = robotDir.canonicalFile
+if (!new File(robotDir, 'src/main/cpp/Robot.cpp').exists()) {
+    throw new GradleException("Robot project not found at '${robotDir}'. Put the robot code folder there, " +
+                              "or set robotProjectDir in gradle.properties (or the ROBOT_PROJECT_DIR " +
+                              "environment variable) to where it is.")
+}
+// build.gradle uses the same folder
+gradle.ext.robotDir = robotDir
+
+// Only touches files that actually differ, and never empties the folder first:
+// VS Code often starts a second Gradle run in the background, and wiping the
+// folder while that run reads it left vendordeps half-empty (missing headers).
+def mirror = { File from, File to ->
+    to.mkdirs()
+    def wanted = [] as Set
+    from.eachFileRecurse { source ->
+        def relative = from.toPath().relativize(source.toPath()).toString()
+        wanted << relative
+        def target = new File(to, relative)
+        if (source.isDirectory()) {
+            target.mkdirs()
+        } else if (!target.exists() || target.bytes != source.bytes) {
+            target.parentFile.mkdirs()
+            // Write a temp file then rename, so a reader never sees a half-written file
+            def temp = new File(target.parentFile, target.name + '.tmp')
+            temp.bytes = source.bytes
+            java.nio.file.Files.move(temp.toPath(), target.toPath(),
+                                     java.nio.file.StandardCopyOption.REPLACE_EXISTING,
+                                     java.nio.file.StandardCopyOption.ATOMIC_MOVE)
+        }
+    }
+    // Remove files the robot project no longer has (deepest first)
+    def stale = []
+    to.eachFileRecurse { target ->
+        if (!wanted.contains(to.toPath().relativize(target.toPath()).toString())) {
+            stale << target
+        }
+    }
+    stale.sort { -it.path.length() }.each { it.isDirectory() ? it.deleteDir() : it.delete() }
+}
+
+mirror(new File(robotDir, 'vendordeps'), new File(settingsDir, 'vendordeps'))
+mirror(new File(robotDir, 'src/main/deploy'), new File(settingsDir, 'src/main/deploy'))

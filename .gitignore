@@ -1,0 +1,13 @@
+# Build output
+build/
+.gradle/
+
+# Copied in from the robot project on every build (see settings.gradle)
+vendordeps/
+src/main/deploy/
+
+# Per-computer simulator state
+ctre_sim/
+networktables.json
+simgui*.json
+*.wpilog

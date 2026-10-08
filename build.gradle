@@ -1,0 +1,91 @@
+plugins {
+    id "cpp"
+    id "google-test-test-suite"
+    id "edu.wpi.first.GradleRIO" version "2026.2.1"
+}
+
+// ------------------------------------------------------------------
+// Physics simulator for the robot code in robotProjectDir (gradle.properties).
+// Builds that robot code TOGETHER with the simulator in src/main/cpp/sim.
+// Desktop only: this project is never deployed to a robot.
+//
+//   Run the sim:   gradlew simulateNative     (or WPILib: "Simulate Robot Code")
+//   Run the tests: gradlew test
+// ------------------------------------------------------------------
+
+// Resolved (and checked) in settings.gradle: ROBOT_PROJECT_DIR or robotProjectDir
+def robotDir = gradle.ext.robotDir
+
+// Set to true to run simulation in debug mode
+wpi.cpp.debugSimulation = false
+
+// Default enable simgui
+wpi.sim.addGui().defaultEnabled = true
+// Enable DS but not by default
+wpi.sim.addDriverstation()
+
+model {
+    components {
+        frcUserProgram(NativeExecutableSpec) {
+            targetPlatform wpi.platforms.desktop
+
+            sources.cpp {
+                source {
+                    srcDirs "${robotDir}/src/main/cpp", 'src/main/cpp'
+                    include '**/*.cpp', '**/*.cc'
+                }
+                exportedHeaders {
+                    srcDirs "${robotDir}/src/main/include", 'src/main/include'
+                }
+            }
+
+            // Enable run tasks for this component
+            wpi.cpp.enableExternalTasks(it)
+
+            // Enable simulation for this component
+            wpi.sim.enable(it)
+            wpi.cpp.vendor.cpp(it)
+            wpi.cpp.deps.wpilib(it)
+        }
+    }
+    testSuites {
+        frcUserProgramTest(GoogleTestTestSuiteSpec) {
+            testing $.components.frcUserProgram
+
+            sources.cpp {
+                source {
+                    srcDir 'src/test/cpp'
+                    include '**/*.cpp'
+                }
+            }
+
+            // Enable run tasks for this component
+            wpi.cpp.enableExternalTasks(it)
+
+            wpi.cpp.vendor.cpp(it)
+            wpi.cpp.deps.wpilib(it)
+            wpi.cpp.deps.googleTest(it)
+        }
+    }
+    binaries {
+        all {
+            // The roboRIO compiler (GCC) defines M_PI automatically; MSVC only does with this.
+            if (targetPlatform.operatingSystem.isWindows()) {
+                cppCompiler.define '_USE_MATH_DEFINES'
+            }
+        }
+    }
+}
+
+// Desktop C++ needs the MSVC compiler. Gradle only finds full Visual Studio on its own,
+// so point it at "Build Tools" when that is what's installed.
+def vsBuildTools = file("C:/Program Files (x86)/Microsoft Visual Studio/2022/BuildTools")
+if (vsBuildTools.exists()) {
+    model {
+        toolChains {
+            visualCpp(VisualCpp) {
+                installDir vsBuildTools
+            }
+        }
+    }
+}

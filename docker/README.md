@@ -92,5 +92,6 @@ all of that and start much faster.
 This has **only been tested on Linux** so far. On Windows, the normal setup
 (WPILib + Visual Studio Build Tools) is the way to go for now. If you'd like to
 help get Docker working on Windows (one setup for everyone, and the base for
-running tests automatically on GitHub), see the testing checklist in the pull
-request that added this folder.
+running tests automatically on GitHub), follow the testing checklist in
+[pull request #1](https://github.com/FRC1229/Physics-SIM-frc/pull/1) and comment
+with what happened.

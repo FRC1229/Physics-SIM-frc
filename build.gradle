@@ -79,8 +79,10 @@ model {
 
 // Desktop C++ needs the MSVC compiler. Gradle only finds full Visual Studio on its own,
 // so point it at "Build Tools" when that is what's installed.
-def vsBuildTools = file("C:/Program Files (x86)/Microsoft Visual Studio/2022/BuildTools")
-if (vsBuildTools.exists()) {
+// Windows only: on other systems Gradle reads "C:/..." as a URI and fails.
+def vsBuildTools = org.gradle.internal.os.OperatingSystem.current().isWindows() ?
+        new File("C:/Program Files (x86)/Microsoft Visual Studio/2022/BuildTools") : null
+if (vsBuildTools?.exists()) {
     model {
         toolChains {
             visualCpp(VisualCpp) {

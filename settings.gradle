@@ -95,3 +95,15 @@ def mirror = { File from, File to ->
 
 mirror(new File(robotDir, 'vendordeps'), new File(settingsDir, 'vendordeps'))
 mirror(new File(robotDir, 'src/main/deploy'), new File(settingsDir, 'src/main/deploy'))
+
+// ------------------------------------------------------------------
+// First run only: start the Sim GUI with two keyboard "Xbox controllers"
+// already plugged into Joystick 0 (driver) and 1 (copilot), so you can drive
+// without a real controller. Key layout: see README. After this, the Sim GUI
+// keeps its own settings in simgui-ds.json (not committed); delete that file
+// to get the default layout back.
+// ------------------------------------------------------------------
+def simGuiDsSettings = new File(settingsDir, 'simgui-ds.json')
+if (!simGuiDsSettings.exists()) {
+    simGuiDsSettings.bytes = new File(settingsDir, 'config/keyboard-controllers.json').bytes
+}

@@ -44,7 +44,7 @@ Run these from the `Physics-SIM-frc` folder:
 | `docker/sim.sh` | Builds the robot code + sim and opens the Sim GUI |
 | `docker/sim.sh scope` | Opens AdvantageScope (the 3D field). Then *File -> Connect to Simulator* |
 | `docker/sim.sh build` | Builds everything and runs the automated tests |
-| `docker/sim.sh test` | Only runs the tests |
+| `docker/sim.sh check` | Only runs the tests |
 | `docker/sim.sh shell` | Opens a terminal inside the container (for poking around) |
 
 Run the sim and AdvantageScope in **two separate terminals** so both stay open.

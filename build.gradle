@@ -10,7 +10,7 @@ plugins {
 // Desktop only: this project is never deployed to a robot.
 //
 //   Run the sim:   gradlew simulateNative     (or WPILib: "Simulate Robot Code")
-//   Run the tests: gradlew test
+//   Run the tests: gradlew check
 // ------------------------------------------------------------------
 
 // Resolved (and checked) in settings.gradle: ROBOT_PROJECT_DIR or robotProjectDir

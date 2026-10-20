@@ -1,0 +1,84 @@
+{
+  "keyboardJoysticks": [
+    {
+      "axisCount": 6,
+      "axisConfig": [
+        {
+          "decKey": 65,
+          "incKey": 68
+        },
+        {
+          "decKey": 87,
+          "incKey": 83
+        },
+        {
+          "decKey": -1,
+          "incKey": 81
+        },
+        {
+          "decKey": -1,
+          "incKey": -1
+        },
+        {
+          "decKey": 74,
+          "incKey": 76
+        },
+        {
+          "decKey": -1,
+          "incKey": -1
+        }
+      ],
+      "buttonCount": 6,
+      "buttonKeys": [
+        90,
+        88,
+        67,
+        86,
+        66,
+        78
+      ],
+      "povCount": 0,
+      "povConfig": []
+    },
+    {
+      "axisCount": 4,
+      "axisConfig": [
+        {
+          "decKey": -1,
+          "incKey": -1
+        },
+        {
+          "decKey": 265,
+          "incKey": 264
+        },
+        {
+          "decKey": -1,
+          "incKey": 263
+        },
+        {
+          "decKey": -1,
+          "incKey": 262
+        }
+      ],
+      "buttonCount": 6,
+      "buttonKeys": [
+        49,
+        50,
+        51,
+        52,
+        53,
+        54
+      ],
+      "povCount": 0,
+      "povConfig": []
+    }
+  ],
+  "robotJoysticks": [
+    {
+      "guid": "Keyboard0"
+    },
+    {
+      "guid": "Keyboard1"
+    }
+  ]
+}

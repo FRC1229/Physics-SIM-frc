@@ -18,7 +18,7 @@ The sim never runs on the robot; it only replaces the hardware on a laptop.
    ```
    <any folder>/
      Rebuilt/            <- the robot code
-     Physics-SIM-frc/    <- this sim
+     Physics SIM frc/    <- this sim
    ```
    Different name or place? Set `robotProjectDir` in `gradle.properties`, or set
    the `ROBOT_PROJECT_DIR` environment variable to the robot code folder.
@@ -28,37 +28,10 @@ The sim never runs on the robot; it only replaces the hardware on a laptop.
 If a terminal build says it needs Java 17, point `JAVA_HOME` at the WPILib JDK
 (`C:/Users/Public/wpilib/<year>/jdk` on Windows, `~/wpilib/<year>/jdk` elsewhere).
 
-**Linux older than Ubuntu 24.04?** The build fails at the very end with
-`undefined reference to ...@GLIBCXX_3.4.32`. Use the Docker setup instead; it
-needs no WPILib install at all. See [docker/README.md](docker/README.md).
-
 ## Using it
 
-- **Drive:** in the Sim GUI, click *Teleoperated* in the **Robot State** panel.
-  The robot ignores all controllers while it says *Disconnected*.
-  - **No controller?** The keyboard already works. The first run sets up two
-    keyboard "controllers" on `Joystick[0]` (driver) and `Joystick[1]` (copilot).
-    Click the Sim GUI window so it has focus, then:
-
-    | Driver (Joystick 0) | Keys |
-    |---|---|
-    | Drive forward / back | W / S |
-    | Strafe left / right | A / D |
-    | Rotate | J / L |
-    | Left trigger | Q |
-    | Buttons 1-6 | Z X C V B N |
-
-    | Copilot (Joystick 1) | Keys |
-    |---|---|
-    | Manual intake | Up / Down arrows |
-    | Turret | Left / Right arrows |
-    | Buttons 1-6 | number keys 1-6 |
-
-    The keys stand in for an Xbox controller's sticks and buttons, so what each
-    button *does* is whatever `RobotContainer.cpp` binds to it. To change keys:
-    *DS -> Keyboard 0 Settings*. To get the default layout back, delete
-    `simgui-ds.json` and restart the sim.
-  - **Real controller:** drag it from *System Joysticks* onto `Joystick[0]` / `Joystick[1]`.
+- **Drive:** in the Sim GUI, drag your controller onto `Joystick[0]` (driver) /
+  `Joystick[1]` (copilot) and pick *Teleoperated*.
 - **Watch:** AdvantageScope -> *File -> Connect to Simulator* -> 3D Field. Drag in
   `Sim/TruePose` (robot), `Localization/EstimatedPose` (ghost), `Sim/FieldBalls`
   and `Sim/Balls` (game pieces).

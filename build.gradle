@@ -10,7 +10,7 @@ plugins {
 // Desktop only: this project is never deployed to a robot.
 //
 //   Run the sim:   gradlew simulateNative     (or WPILib: "Simulate Robot Code")
-//   Run the tests: gradlew check
+//   Run the tests: gradlew test
 // ------------------------------------------------------------------
 
 // Resolved (and checked) in settings.gradle: ROBOT_PROJECT_DIR or robotProjectDir
@@ -79,10 +79,8 @@ model {
 
 // Desktop C++ needs the MSVC compiler. Gradle only finds full Visual Studio on its own,
 // so point it at "Build Tools" when that is what's installed.
-// Windows only: on other systems Gradle reads "C:/..." as a URI and fails.
-def vsBuildTools = org.gradle.internal.os.OperatingSystem.current().isWindows() ?
-        new File("C:/Program Files (x86)/Microsoft Visual Studio/2022/BuildTools") : null
-if (vsBuildTools?.exists()) {
+def vsBuildTools = file("C:/Program Files (x86)/Microsoft Visual Studio/2022/BuildTools")
+if (vsBuildTools.exists()) {
     model {
         toolChains {
             visualCpp(VisualCpp) {
